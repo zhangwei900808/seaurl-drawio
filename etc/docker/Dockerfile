@@ -9,16 +9,16 @@ RUN apt-get update -y && \
         git
 
 RUN cd /tmp && \
-    git clone --depth 1 https://github.com/jgraph/drawio.git && \
+    git clone --depth 1 https://github.com/zhangwei900808/seaurl-drawio.git && \
     cd /tmp/drawio/etc/build/ && \
     ant war
 
 FROM tomcat:9-jre11
 
-LABEL maintainer="JGraph Ltd" \
-      org.opencontainers.image.authors="JGraph Ltd" \
-      org.opencontainers.image.url="https://www.drawio.com" \
-      org.opencontainers.image.source="https://github.com/jgraph/docker-drawio"
+LABEL maintainer="seaurl" \
+      org.opencontainers.image.authors="Seaurl Ltd" \
+      org.opencontainers.image.url="https://www.seaurl.com" \
+      org.opencontainers.image.source="https://github.com/zhangwei900808/seaurl-drawio"
 
 ENV RUN_USER            tomcat
 ENV RUN_GROUP           tomcat
