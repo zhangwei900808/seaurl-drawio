@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: <podname>
+  namespace: <podname>
+  labels:
+    app: draw.io
+spec:
+  type: NodePort
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+  ports:
+    - name: http
+      port: <podport>
+  selector:
+    app: draw.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <podname>
+  namespace: <podname>
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: draw.io
+  template:
+    metadata:
+      labels:
+        app: draw.io
+    spec:
+      containers:
+        - image: <imagename>
+          imagePullPolicy: IfNotPresent
+          name: <podname>
+          ports:
+            - containerPort: <podport>
+---
