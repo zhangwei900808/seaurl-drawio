@@ -1,6 +1,6 @@
 bin
 classes
-etc/docker/build.sh
+etc/docker/*.sh
 node_modules
 .vscode/settings.json
 src/main/webapp/WEB-INF/lib/animal-sniffer-annotations-*.jar
