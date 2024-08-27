@@ -17,7 +17,7 @@ echo "2.显示提交的hash值：${commit_hash}"
 
 echo "3.使用buildx 编译 docker镜像"
 # 使用变量作为第二个命令的参数
-docker buildx build --platform linux/amd64 -t "${repository}:${commit_hash}" -f docker/Dockerfile . --load
+docker buildx build --platform linux/amd64 -t "${repository}:${commit_hash}" -f Dockerfile . --load
 
 echo "4.登录aliyun docker镜像服务器"
 # 登录aliyun docker 镜像库
