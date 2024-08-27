@@ -4059,7 +4059,6 @@
                 Editor.currentTheme == 'min';
 
             if (urlParams['embed'] == '1') {
-                alert(22)
                 this.addSubmenu('importFrom', menu, parent);
                 this.addSubmenu('saveTo', menu, parent);
                 this.addSubmenu('exportAs', menu, parent);
