@@ -6,9 +6,9 @@ echo "1.切换到测试分支"
 # 切换到生产分支
 git switch main
 
-project_name="seaurl-drawio"
-project_port=19990
 project_namespace="drawio"
+project_name="seaurl-${project_namespace}"
+project_port=7171
 
 # 定义aliyun 地址
 repository="registry.cn-hangzhou.aliyuncs.com/com-seaurl/${project_name}"
