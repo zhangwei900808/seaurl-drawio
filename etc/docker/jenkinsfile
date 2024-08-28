@@ -1,0 +1,91 @@
+pipeline {
+    agent any
+    environment {
+        //只需要改下面两段代码即可，一个name一个port
+        SERVICE_NAME="drawio"
+        SERVICE_PORT="9908"
+        GIT_BRANCH_NAME="main"
+        POD_PREFIX_NAME="thirdParty"
+
+        MODULE_NAME="seaurl-${SERVICE_NAME}"
+        POD_NAME="${POD_PREFIX_NAME}-${MODULE_NAME}"
+        GIT_REPOSITORY="git@github.com:zhangwei900808/seaurl-drawio.git"
+        K8S_YAML="/etc/k8s/${MODULE_NAME}.yaml"
+        DOCKER_USERNAME="zhangwei900808@126.com"
+        DOCKER_PWD="@zhangwei0808"
+        ALIYUN_DOCKER_HOST = 'registry.cn-hangzhou.aliyuncs.com'
+        ALIYUN_DOCKER_NAMESPACE="com-seaurl"
+        ALIYUN_DOCKER_REPOSITORY_NAME="${MODULE_NAME}"
+        K8S_CONFIG = credentials('test-seaurl-k8s-config-text')
+        GIT_CREDENTIALS_ID="b23e525a-8f5b-4237-a5d4-e74e1ad7ce8a"
+    }
+    // parameters {
+    //     string(name: 'ALIYUN_DOCKER_HOST', defaultValue: 'registry.cn-hangzhou.aliyuncs.com', description: 'aliyun镜像仓库地址')
+    //     string(name: 'DOCKER_IMG_PATH', defaultValue: 'com-seaurl/seaurl-webapp', description: 'docker镜像目录')
+    // }
+    stages {
+        stage("Clone") {
+            agent any
+            steps {
+                echo "1.Clone Stage"
+                // 删除文件夹
+                deleteDir()
+                git branch: "${GIT_BRANCH_NAME}",credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY}"
+                script {
+                    // 获取git代码tag为docker仓库tag
+                    // GIT_TAG = sh(returnStdout: true,script: 'git describe --tags --always').trim()
+                    // 获取git提交hash做为docker仓库tag
+                    GIT_TAG = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                    DOCKER_REPOSITORY = "${ALIYUN_DOCKER_HOST}/${ALIYUN_DOCKER_NAMESPACE}/${ALIYUN_DOCKER_REPOSITORY_NAME}"
+                    // docker 阿里镜像仓库
+                    DOCKER_REPOSITORY_TAG = "${DOCKER_REPOSITORY}:${GIT_TAG}"
+                }
+            }
+        }
+        stage("Test") {
+            agent any
+            steps {
+                echo "2.Test Stage"
+            }
+        }
+        stage("Build") {
+            agent any
+            steps {
+                echo "3.Build Server"
+                sh "docker build -t "${DOCKER_REPOSITORY_TAGh}" -f etc/docker/Dockerfile ."
+            }
+        }
+        stage("Push") {
+            agent any
+            steps {
+                echo "4.Push Docker Image Stage"
+                //推送Docker镜像，username 跟 password 为 阿里云容器镜像服务的账号密码
+                sh "docker login --username=${DOCKER_USERNAME} --password=${DOCKER_PWD} ${ALIYUN_DOCKER_HOST}"
+
+                // 开始推送镜像
+                sh "docker push ${DOCKER_REPOSITORY_TAG}"
+                // 删除jenkins生成的image
+                sh '''
+                    docker images | grep seaurl | awk '{print $3}' | xargs docker rmi -f
+                '''
+                // 删除远程生成的image
+                //sh "docker rmi ${ALIYUN_DOCKER_HOST}/${DOCKER_IMG_PATH}:${GIT_TAG}"
+            }
+        }
+        stage("Deploy") {
+            agent {
+                docker {
+                    image 'lwolf/helm-kubectl-docker'
+                }
+            }
+            steps {
+                echo "5.发布镜像"
+                sh "mkdir -p ~/.kube"
+                sh "echo ${K8S_CONFIG} | base64 -d  > ~/.kube/config"
+                sh "sed -i 's#<imagename>#${DOCKER_REPOSITORY_TAG}#g;s#<podname>#${POD_NAME}#g;s#<podport>#${SERVICE_PORT}#g' ${K8S_YAML}"
+                sh "kubectl create namespace ${SERVICE_NAME}"
+                sh "kubectl apply -f ${K8S_YAML} -n ${SERVICE_NAME}"
+            }
+        }
+    }
+}
