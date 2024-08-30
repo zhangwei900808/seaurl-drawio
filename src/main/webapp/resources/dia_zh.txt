@@ -1290,3 +1290,5 @@ confEvalWarn=评估许可 - 不得用于生产用途
 otherUsersEditing=其他用户正在编辑此绘图
 firtTimeGD=First time to access this file?
 drawioGDAppNotInstalled=draw.io Google Drive app is not installed, please install it first
+importFromSeaurl=打开我的文件
+saveFromSeaurl=保存到我的文件

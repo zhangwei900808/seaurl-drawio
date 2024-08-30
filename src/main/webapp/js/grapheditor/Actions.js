@@ -99,6 +99,15 @@ Actions.prototype.init = function()
 	}).isEnabled = isGraphEnabled;
 	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S');
+	this.addAction('importFromSeaurl', function() {
+		window.addEventListener('onImportFromSeaurl', ()=>{})
+	}, null, null, '');
+	this.addAction('saveFromSeaurl', function() {
+		const xml = mxUtils.getXml(ui.editor.getGraphXml());
+		// document.dispatchEvent(myEvent);
+		var parent = graph
+		console.log('parent=', parent)
+	}, null, null, '');
 	// this.addAction('saveTo...', function() {
 	// 	alert(222)
 	// }, null, null, '');
@@ -112,7 +121,7 @@ Actions.prototype.init = function()
 	this.addAction('pageSetup...', function() { ui.showDialog(new PageSetupDialog(ui).container, 320, 240, true, true); }).isEnabled = isGraphEnabled;
 	this.addAction('print...', function() { ui.showPrintDialog(); }, null, 'sprite-print', Editor.ctrlKey + '+P');
 	this.addAction('preview', function() { mxUtils.show(graph, null, 10, 10); });
-	
+
 	// Edit actions
 	this.addAction('undo', function() { ui.undo(); }, null, 'sprite-undo', Editor.ctrlKey + '+Z');
 	this.addAction('redo', function() { ui.redo(); }, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');

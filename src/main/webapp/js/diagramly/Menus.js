@@ -2588,24 +2588,24 @@
             if (!editorUi.isOffline()) {
                 menu.addSeparator(parent);
 
-                // menu.addItem(mxResources.get('url') + '...', null, function () {
-                //     var dlg = new FilenameDialog(editorUi, '', mxResources.get('import'), function (fileUrl) {
-                //         if (fileUrl != null && fileUrl.length > 0 && editorUi.spinner.spin(document.body, mxResources.get('loading'))) {
-                //             var mime = (/(\.png)($|\?)/i.test(fileUrl)) ? 'image/png' : 'text/xml';
-                //
-                //             // Uses proxy to avoid CORS issues
-                //             editorUi.editor.loadUrl(PROXY_URL + '?url=' + encodeURIComponent(fileUrl), function (data) {
-                //                     doImportFile(data, mime, fileUrl);
-                //                 },
-                //                 function () {
-                //                     editorUi.spinner.stop();
-                //                     editorUi.handleError(null, mxResources.get('errorLoadingFile'));
-                //                 }, mime == 'image/png');
-                //         }
-                //     }, mxResources.get('url'));
-                //     editorUi.showDialog(dlg.container, 300, 80, true, true);
-                //     dlg.init();
-                // }, parent);
+                menu.addItem(mxResources.get('url') + '...', null, function () {
+                    var dlg = new FilenameDialog(editorUi, '', mxResources.get('import'), function (fileUrl) {
+                        if (fileUrl != null && fileUrl.length > 0 && editorUi.spinner.spin(document.body, mxResources.get('loading'))) {
+                            var mime = (/(\.png)($|\?)/i.test(fileUrl)) ? 'image/png' : 'text/xml';
+
+                            // Uses proxy to avoid CORS issues
+                            editorUi.editor.loadUrl(PROXY_URL + '?url=' + encodeURIComponent(fileUrl), function (data) {
+                                    doImportFile(data, mime, fileUrl);
+                                },
+                                function () {
+                                    editorUi.spinner.stop();
+                                    editorUi.handleError(null, mxResources.get('errorLoadingFile'));
+                                }, mime == 'image/png');
+                        }
+                    }, mxResources.get('url'));
+                    editorUi.showDialog(dlg.container, 300, 80, true, true);
+                    dlg.init();
+                }, parent);
             }
         }))).isEnabled = isGraphEnabled;
 
@@ -4059,7 +4059,11 @@
                 Editor.currentTheme == 'min';
 
             if (urlParams['embed'] == '1') {
+                this.addMenuItems(menu, ['-', 'importFromSeaurl','saveFromSeaurl', '-'], parent);
+
                 this.addSubmenu('importFrom', menu, parent);
+                // this.addSubmenu('importFromSeaurl', menu, parent);
+                // this.addSubmenu('saveFromSeaurl', menu, parent);
                 this.addSubmenu('saveTo', menu, parent);
                 this.addSubmenu('exportAs', menu, parent);
                 this.addSubmenu('embed', menu, parent);
@@ -4223,7 +4227,7 @@
                         }
                     }
 
-                    this.addMenuItems(menu, ['-', 'save', 'saveAs', '-'], parent);
+                    this.addMenuItems(menu, ['-', 'importFromSeaurl', 'saveFromSeaurl', 'save', 'saveAs', '-'], parent);
                     // this.addMenuItems(menu, ['-', 'save', 'saveAs','saveTo', '-'], parent);
 
                     if (!mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp &&
@@ -4256,7 +4260,9 @@
                 }
 
                 menu.addSeparator(parent);
-                this.addSubmenu('importFrom', menu, parent);
+                // this.addSubmenu('importFrom', menu, parent);
+                // this.addSubmenu('importFromSeaurl', menu, parent);
+                // this.addSubmenu('saveFromSeaurl', menu, parent);
                 this.addSubmenu('exportAs', menu, parent);
                 menu.addSeparator(parent);
                 this.addSubmenu('embed', menu, parent);
