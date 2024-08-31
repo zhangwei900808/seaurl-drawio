@@ -3951,7 +3951,7 @@
 
             if (Editor.currentTheme != 'simple') {
                 editorUi.menus.addMenuItems(menu, ['-', 'importFromSeaurl','saveFromSeaurl', 'importFile'], parent);
-                editorUi.menus.addSubmenu('extras', menu, parent, mxResources.get('exportFile'));
+                this.addSubmenu('exportFile', menu, parent);
                 menu.addSeparator(parent);
                 editorUi.menus.addSubmenu('extras', menu, parent, mxResources.get('settings'));
                 menu.addSeparator(parent);
