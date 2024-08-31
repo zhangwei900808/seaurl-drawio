@@ -8,6 +8,25 @@
 	 * Version
 	 */
 	EditorUi.VERSION = '@DRAWIO-VERSION@';
+
+	EditorUi.prototype.importFromSeaurl = function()
+	{
+		var parent = window.opener || window.parent;
+
+		parent.postMessage(JSON.stringify({
+			event: 'importFromSeaurl'
+		}), '*');
+	};
+
+	EditorUi.prototype.saveFromSeaurl = function()
+	{
+		var parent = window.opener || window.parent;
+
+		var xml = this.getFileData(true);
+		var msg = this.createLoadMessage('saveFromSeaurl');
+		msg.xml = xml;
+		parent.postMessage(JSON.stringify(msg), '*');
+	};
 	
 	/**
 	 * Overrides compact UI setting.

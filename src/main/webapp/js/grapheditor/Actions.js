@@ -99,23 +99,16 @@ Actions.prototype.init = function()
 	}).isEnabled = isGraphEnabled;
 	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S');
+
 	this.addAction('importFromSeaurl', function() {
-		const parent = window.opener || window.parent;
-		parent.postMessage(JSON.stringify({
-			event: 'importFromSeaurl'
-		}, '*'));
-	}, null, null, '');
+		ui.importFromSeaurl()
+
+	}, null, null, '')
+
 	this.addAction('saveFromSeaurl', function() {
-		const xml = mxUtils.getXml(ui.editor.getGraphXml());
-		// document.dispatchEvent(myEvent);
-		const parent = window.opener || window.parent;
-		console.log('parent=', parent)
-		console.log('xml=', xml)
-		parent.postMessage(JSON.stringify({
-			event: 'saveFromSeaurl',
-			xml: xml
-		}, '*'));
-	}, null, null, '');
+		ui.saveFromSeaurl()
+
+	}, null, null, '')
 
 	this.addAction('importFile', function() {
 		ui.importLocalFile(true);
