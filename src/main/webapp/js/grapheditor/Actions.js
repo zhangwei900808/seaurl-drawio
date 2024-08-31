@@ -100,17 +100,31 @@ Actions.prototype.init = function()
 	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S');
 	this.addAction('importFromSeaurl', function() {
-		window.addEventListener('onImportFromSeaurl', ()=>{})
+		const parent = window.opener || window.parent;
+		parent.postMessage(JSON.stringify({
+			event: 'importFromSeaurl'
+		}, '*'));
 	}, null, null, '');
 	this.addAction('saveFromSeaurl', function() {
 		const xml = mxUtils.getXml(ui.editor.getGraphXml());
 		// document.dispatchEvent(myEvent);
-		var parent = graph
+		const parent = window.opener || window.parent;
 		console.log('parent=', parent)
+		console.log('xml=', xml)
+		parent.postMessage(JSON.stringify({
+			event: 'saveFromSeaurl',
+			xml: xml
+		}, '*'));
 	}, null, null, '');
-	// this.addAction('saveTo...', function() {
-	// 	alert(222)
+
+	this.addAction('importFile', function() {
+		ui.importLocalFile(true);
+	}, null, null, '');
+
+	// this.addAction('exportFile', function() {
+	// 	ui.showDialog(new ExportDialog(ui).container, 300, 340, true, true);
 	// }, null, null, '');
+
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 340, true, true); });
 	this.addAction('editDiagram...', function()
 	{

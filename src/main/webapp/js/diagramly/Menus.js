@@ -2376,7 +2376,57 @@
                 }
             }, null, null, (urlParams['embedInline'] == '1') ? 'Escape' : null);
         }
+        this.put('exportFile', new Menu(mxUtils.bind(this, function (menu, parent) {
+            if (editorUi.isExportToCanvas()) {
+                this.addMenuItems(menu, ['exportPng'], parent);
 
+                if (editorUi.jpgSupported) {
+                    this.addMenuItems(menu, ['exportJpg'], parent);
+                }
+
+                if (editorUi.webpSupported) {
+                    this.addMenuItems(menu, ['exportWebp'], parent);
+                }
+            }
+
+            // Disabled for standalone mode in iOS because new tab cannot be closed
+            else if (!editorUi.isOffline() && (!mxClient.IS_IOS || !navigator.standalone)) {
+                this.addMenuItems(menu, ['exportPng', 'exportJpg'], parent);
+            }
+
+            this.addMenuItems(menu, ['exportSvg', '-'], parent);
+
+            // Redirects export to PDF to print in Chrome App
+            if (editorUi.isOffline() || editorUi.printPdfExport) {
+                this.addMenuItems(menu, ['exportPdf'], parent);
+            }
+            // Disabled for standalone mode in iOS because new tab cannot be closed
+            else if (!editorUi.isOffline() && (!mxClient.IS_IOS || !navigator.standalone)) {
+                this.addMenuItems(menu, ['exportPdf'], parent);
+            }
+
+            if (!mxClient.IS_IE && (typeof (VsdxExport) !== 'undefined' || !editorUi.isOffline())) {
+                this.addMenuItems(menu, ['exportVsdx'], parent);
+            }
+
+            this.addMenuItems(menu, ['-', 'exportHtml', 'exportXml', 'exportUrl'], parent);
+
+            if (!editorUi.isOffline()) {
+                menu.addSeparator(parent);
+                this.addMenuItem(menu, 'export', parent).firstChild.nextSibling.innerHTML = mxResources.get('advanced') + '...';
+            }
+
+            if (!mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp && Editor.currentTheme == 'min') {
+                this.addMenuItems(menu, ['publishLink'], parent);
+            }
+
+            if (editorUi.mode != App.MODE_ATLAS && urlParams['extAuth'] != '1' &&
+                (Editor.currentTheme == 'simple' || Editor.currentTheme == 'sketch' ||
+                    Editor.currentTheme == 'min')) {
+                menu.addSeparator(parent);
+                editorUi.menus.addSubmenu('embed', menu, parent);
+            }
+        })));
         this.put('exportAs', new Menu(mxUtils.bind(this, function (menu, parent) {
             if (editorUi.isExportToCanvas()) {
                 this.addMenuItems(menu, ['exportPng'], parent);
@@ -3900,6 +3950,9 @@
             var file = editorUi.getCurrentFile();
 
             if (Editor.currentTheme != 'simple') {
+                editorUi.menus.addMenuItems(menu, ['-', 'importFromSeaurl','saveFromSeaurl', 'importFile'], parent);
+                editorUi.menus.addSubmenu('extras', menu, parent, mxResources.get('exportFile'));
+                menu.addSeparator(parent);
                 editorUi.menus.addSubmenu('extras', menu, parent, mxResources.get('settings'));
                 menu.addSeparator(parent);
             }
@@ -3932,8 +3985,8 @@
             } else if (editorUi.mode == App.MODE_ATLAS) {
                 editorUi.menus.addMenuItems(menu, ['save', 'synchronize', '-'], parent);
             } else if (urlParams['noFileMenu'] != '1') {
-                editorUi.menus.addSubmenu('file', menu, parent);
-                menu.addSeparator(parent);
+                // editorUi.menus.addSubmenu('file', menu, parent);
+                // menu.addSeparator(parent);
 
                 if (Editor.currentTheme == 'min') {
                     editorUi.menus.addMenuItems(menu, ['toggleShapes', 'format',
@@ -3948,12 +4001,12 @@
                 }
             }
 
-            editorUi.menus.addSubmenu('exportAs', menu, parent);
+            // editorUi.menus.addSubmenu('exportAs', menu, parent);
 
             if (mxClient.IS_CHROMEAPP || EditorUi.isElectronApp || editorUi.getServiceName() == 'atlassian') {
                 editorUi.menus.addMenuItems(menu, ['import'], parent);
             } else if (urlParams['noFileMenu'] != '1') {
-                editorUi.menus.addSubmenu('importFrom', menu, parent);
+                // editorUi.menus.addSubmenu('importFrom', menu, parent);
             }
 
             if (Editor.currentTheme != 'simple' && Editor.currentTheme != 'min') {
@@ -3972,7 +4025,7 @@
                 this.addSubmenu('openLibraryFrom', menu, parent);
             }
 
-            menu.addSeparator(parent);
+            // menu.addSeparator(parent);
 
             // Cannot use print in standalone mode on iOS as we cannot open new windows
             if (urlParams['noFileMenu'] != '1' && (!mxClient.IS_IOS || !navigator.standalone)) {
@@ -4059,7 +4112,7 @@
                 Editor.currentTheme == 'min';
 
             if (urlParams['embed'] == '1') {
-                this.addMenuItems(menu, ['-', 'importFromSeaurl','saveFromSeaurl', '-'], parent);
+                // this.addMenuItems(menu, ['-', 'importFromSeaurl','saveFromSeaurl', '-'], parent);
 
                 this.addSubmenu('importFrom', menu, parent);
                 // this.addSubmenu('importFromSeaurl', menu, parent);
@@ -4227,7 +4280,7 @@
                         }
                     }
 
-                    this.addMenuItems(menu, ['-', 'importFromSeaurl', 'saveFromSeaurl', 'save', 'saveAs', '-'], parent);
+                    // this.addMenuItems(menu, ['-', 'importFromSeaurl', 'saveFromSeaurl', 'save', 'saveAs', '-'], parent);
                     // this.addMenuItems(menu, ['-', 'save', 'saveAs','saveTo', '-'], parent);
 
                     if (!mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp &&

@@ -1292,3 +1292,5 @@ firtTimeGD=First time to access this file?
 drawioGDAppNotInstalled=draw.io Google Drive app is not installed, please install it first
 importFromSeaurl=打开我的文件
 saveFromSeaurl=保存到我的文件
+importFile=打开
+exportFile=导出
