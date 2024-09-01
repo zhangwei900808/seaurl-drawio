@@ -50,7 +50,7 @@ jobs:
           wget https://raw.githubusercontent.com/zhangwei900808/seaurl-drawio/main/VERSION
           export VERSION=`cat VERSION`
           export TAG=`if [ "" == ${VERSION} ]; then echo "latest"; else echo ${VERSION} ; fi`
-          sed -i "s/<tag>/${TAG}/g" k8s-deploy.yaml
+          sed -i "s/<tag>/${TAG}/g" etc/docker/k8s-deploy.yaml
           kubectl get namespace drawio || kubectl create namespace drawio
-          kubectl apply -f /etc/docker/k8s-deploy.yaml -n drawio
+          kubectl apply -f etc/docker/k8s-deploy.yaml -n drawio
 #          kubectl rollout status deployment/seaurl-drawio-deployment
