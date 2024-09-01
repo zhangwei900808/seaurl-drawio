@@ -1,30 +1,54 @@
-#name: Docker Image CI
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#    tags:
-#      - 'v*'
-#
-#jobs:
-#  build-and-push:
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: write
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Log in to Alibaba Cloud Registry
-#        uses: docker/login-action@v2
-#        with:
-#          registry: ${{ secrets.ALIYUN_REGISTRY_SERVER }}
-#          username: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
-#          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
-#
-#      - name: Build Docker Image
-#        run: docker build -t ${{ secrets.ALIYUN_REGISTRY_SERVER }}/com-seaurl/seaurl-drawio:latest -f etc/docker/Dockerfile .
-#
-#      - name: Push Docker Image
-#        run: docker push ${{ secrets.ALIYUN_REGISTRY_SERVER }}/com-seaurl/seaurl-drawio:latest
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Alibaba Cloud Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALIYUN_REGISTRY_SERVER }}
+          username: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
+          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+
+      - name: Build And Publish Docker Image
+        run: |
+          # Get draw.io current latest version
+          wget https://raw.githubusercontent.com/zhangwei900808/seaurl-drawio/main/VERSION
+          export VERSION=`cat VERSION`
+          export TAG=`if [ "" == ${VERSION} ]; then echo "latest"; else echo ${VERSION} ; fi`
+          docker build -f etc/docker/Dockerfile -t ${{ secrets.ALIYUN_REGISTRY_SERVER }}/com-seaurl/seaurl-drawio:${TAG} .
+          docker push ${{ secrets.ALIYUN_REGISTRY_SERVER }}/com-seaurl/seaurl-drawio:${TAG}
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+      #        with:
+      #          version: '1.24.0' # Specify the kubectl version you need
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Get draw.io current latest version
+          wget https://raw.githubusercontent.com/zhangwei900808/seaurl-drawio/main/VERSION
+          export VERSION=`cat VERSION`
+          export TAG=`if [ "" == ${VERSION} ]; then echo "latest"; else echo ${VERSION} ; fi`
+          sed -i "s/<tag>/${TAG}/g" k8s-deploy.yaml
+          kubectl get namespace drawio || kubectl create namespace drawio
+          kubectl apply -f etc/docker/k8s-deploy.yaml -n drawio
+#          kubectl rollout status deployment/seaurl-drawio-deployment
