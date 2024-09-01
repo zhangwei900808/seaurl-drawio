@@ -49,6 +49,7 @@ RUN mkdir -p $CATALINA_HOME/webapps/draw && \
         conf/server.xml
 
 # Copy docker-entrypoint
+# 注意：当你使用 COPY --from=build 时，Docker 知道它需要从构建阶段（build）中提取文件
 COPY --from=build /tmp/seaurl-drawio/etc/docker/docker-entrypoint.sh /
 RUN chmod 755 /docker-entrypoint.sh
 # Add a tomcat user
